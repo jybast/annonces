@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil
+{% endblock %}
+
+{% block body %}
+<div class="container">
+	{% for message in app.Flashes('message')  %}
+		<div class="p-3 my-2 rounded-2 success">{{ message }} </div>
+	{% endfor %}
+
+	{# Formulaire de recherche#}
+	{{ form(form) }}
+
+	{# Liste des annonces#}
+	{% for annonce in annonces %}
+
+		<div class="card shadow-1 fx-row">
+			<div class="primary d-flex vcenter fx-center px-4">
+				<img src="{{ asset('uploads/images/' ~ annonce.images[0].name) | imagine_filter('square')}}" alt="{{ annonce.title }}">
+			</div>
+			<div class="flex fx-col fx-grow">
+				<div class="card-header"><a href="{{ path('annonces_details', {slug: annonce.slug }) }}">{{ annonce.title }}</a>
+				</div>
+				<div class="card-content">
+					<p> Catégorie : {{ annonce.categories.name }}</p>
+					<p>
+						{{ annonce.content | striptags | u.truncate(250, ' ...')}}
+					</p>
+                    <p> Annonce publiée le {{ annonce.createdAt | date('d/m/Y') }} à {{ annonce.createdAt | date('h:m') }}</p>
+					{# Gestion des favoris #}
+					<div class="txt-red">
+						{# Vérifier si un utilisateur connecté #}
+							{% if is_granted("ROLE_USER") %}
+								{# On parcourt la table des liens #}
+								{% for favoris in annonce.favoris %}
+									{# Est-ce que l'id du user est le même que le user connecté #}
+									{% if favoris.id == app.user.id %}
+										{# on ouvre possibilité de retirer en favori #}
+										<a href="{{ path('annonces_retrait_favoris', {id: annonce.id}) }}">
+										<i class="fas fa-heart"></i></a>
+									{% else %}
+										{# on ouvre possibilité de mettre en favori #}
+										<a href="{{ path('annonces_ajout_favoris', {id: annonce.id}) }}"><i class="far fa-heart"></i></a>
+									{% endif %}
+								{% else %}
+									<a href="{{ path('annonces_ajout_favoris', {id: annonce.id}) }}"><i class="far fa-heart"></i></a>
+								{% endfor %}
+							{% else %}
+								{# si pas de user connecté on laisse le coeur vide #}
+								<i class="far fa-heart"></i>
+							{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+
+	{% endfor %}
+</div>
+
+{% endblock %}

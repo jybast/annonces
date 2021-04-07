@@ -1,0 +1,18 @@
+{{ form_start(form) }}
+    {{ form_widget(form) }}
+
+
+    {# on vérifie si la roue est users_annonces_edit pour afficher les images #}
+   {% if app.request.attributes.get('_route') == 'users_annonces_edit' %}
+       <h2>Images</h2>
+       {% for image in annonce.images %}
+           <div>
+                <img src="{{ asset('/uploads/' ~ image.name) }}" alt="image" with="150">
+
+                <a href="{{ path('users_supprimer_image', {'id': image.id }) }}" data-delete data-token="{{ csrf_token('delete' ~ image.id)}}">Supprimer l'image</a>
+           </div>
+       {% endfor %}
+   {% endif %}
+   
+    <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_end(form) }}

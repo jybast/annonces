@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{{annonce.title}}
+{% endblock %}
+
+{% block body %}
+	<div class="container">
+		{% for message in app.Flashes('message')  %}
+			<div class="p-3 my-2 rounded-2 success">{{ message }} </div>
+		{% endfor %}
+		<div class="caroulix" id="example-caroulix" data-ax="caroulix" data-ax-caroulix-autoplay-enabled="true" data-caroulix-indicators-enabled="true">
+			<div class="caroulix-arrow caroulix-prev">
+				<i class="fas fa-chevron-left"></i>
+			</div>
+			<div class="caroulix-arrow caroulix-next">
+				<i class="fas fa-chevron-right"></i>
+			</div>
+				{% for image in annonce.images %}
+					<div class="caroulix-item">
+						<img src="{{ asset('uploads/images/' ~ image.name) | imagine_filter('banniere')}}" alt="{{ annonce.title }}">
+					</div>
+				{% endfor %}
+		</div>
+		<div class="card shadow-1 fx-row">
+			<div class="primary d-flex vcenter fx-center px-4">
+				<img src="{{ asset('uploads/images/' ~ annonce.images[0].name) | imagine_filter('square')}}" alt="{{ annonce.title }}">
+			</div>
+			<div class="flex fx-col fx-grow">
+				<div class="card-header">{{ annonce.title }}</div>
+				<div class="card-content">
+					<p>
+						Catégorie :
+						{{ annonce.categories.name }}</p>
+					<p>
+						{{ annonce.content | striptags | u.truncate(250, ' ...')}}
+					</p>
+					<p>
+						Annonce publiée le
+						{{ annonce.createdAt | date('d/m/Y') }}
+						à
+						{{ annonce.createdAt | date('h:m') }}</p>
+					<p>
+						<button class="btn rounded-1 primary press modal-trigger" data-target="modal-contact">Contacter l'annonceur</button>
+					</p>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal shadow-1 white falling" id="modal-contact" data-ax="modal">
+		<div class="container">
+		<div class="modal-header">Contacter l'annonceur</div>
+
+		<div class="divider"></div>
+			{{ form_start(form)}}
+		<div class="modal-content"></div>
+			{{ form_widget(form.title)}}
+			{{ form_row(form.email)}}
+			{{ form_row(form.message)}}
+		<div class="divider"></div>
+
+		<div class="modal-footer">
+			<button class="btn small primary">Envoyer</button>
+			<button data-target="modal-contact" class="ml-auto btn shadow-1 rounded-1 small secondary modal-trigger">Fermer</button>
+		</div>
+		    {{ form_end(form)}}
+		</div>
+	</div>
+
+{% endblock %}
+
+{% block javascripts %}
+	<script>
+	{# Au chargement de la page on affiche le titre de l'annonce #}
+	window.onload = () => {
+		document.querySelector("#annonce_contact_title").value = "{{ annonce.title | raw}}"
+	}
+	</script>
+{% endblock %}

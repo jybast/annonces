@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>
+			{% block title %}Welcome!
+			{% endblock %}
+		</title>
+		{# Run `composer require symfony/webpack-encore-bundle`
+						           and uncomment the following Encore helpers to start using Symfony UX #}
+
+		<!-- Axentix CSS minified version -->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/axentix@1.1.0/dist/css/axentix.min.css">
+		{% block stylesheets %}
+			{#{{ encore_entry_link_tags('app') }}#}
+		{% endblock %}
+		<!-- Fichiers CSS perso communs à toutes les pages -->
+		<link rel="stylesheet" href="{{ asset('css/styles.css') }}">
+	</head>
+
+	<body class="layout with-sidenav">
+		<header>
+			<nav class="navbar shadow-1 primary">
+				<a href="{{ path('app_home') }}" class="navbar-brand">Annonces</a>
+				<div class="navbar-menu ml-auto">
+					<a class="navbar-link" href="{{ path('app_home') }}">Accueil</a>
+					<a class="navbar-link" href="#">Link 2</a>
+					<a class="navbar-link" href="#">Link 3</a>
+					<a class="navbar-link" href="#">Link 4</a>
+				</div>
+			</nav>
+		</header>
+		<div id="example-sidenav" data-ax="sidenav" class="sidenav shadow-1 large fixed white">
+			<div class="sidenav-header">
+				<button data-target="example-sidenav" class="sidenav-trigger">
+					<i class="fas fa-times"></i>
+				</button>
+				<img class="sidenav-logo dropshadow-1" src="your_img_path" alt="Logo"/>
+			</div>
+			<a href="#" class="sidenav-link active">Mon profil</a>
+			<a href="#" class="sidenav-link">Mes annonces</a>
+			<a href="#" class="sidenav-link">Link 3</a>
+			<a href="#" class="sidenav-link">Link 4</a>
+		</div>
+		<main>
+			<button data-target="example-sidenav" class="btn rounded-1 press amaranth dark-1 sidenav-trigger hide-md-up">
+				Open sidenav
+			</button>
+			{% block body %}<!-- Code here the main content -->{% endblock %}
+		</main>
+
+		<footer class="footer primary">
+			Copyright © 2020 - Example
+		</footer>
+
+		<!-- Axentix JS minified version -->
+		<script src="https://cdn.jsdelivr.net/npm/axentix@1.1.0/dist/js/axentix.min.js"></script>
+		{% block javascripts %}
+			{#{{ encore_entry_script_tags('app') }}#}
+		{% endblock %}
+		<!-- Fichiers JS perso communs à toutes les pages. -->
+		<script src="{{ asset('js/scripts.js') }}"></script>
+	</body>
+
+</html>

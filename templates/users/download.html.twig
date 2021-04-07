@@ -1,0 +1,63 @@
+{% extends 'base-pdf.html.twig' %}
+
+{% block title %}Téléchargement de données
+{% endblock %}
+
+{% block body %}
+	<h1>Liste des données de
+		{{ app.user.firstname }}
+		{{ app.user.name }}</h1>
+	<h2>
+		Vos données personnelles
+	</h2>
+	<table border="1">
+		<thead>
+			<tr>
+				<th scope="col">Nom :</th>
+				<th scope="col">Prénom :</th>
+				<th scope="col">Email :</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>{{ app.user.name}}</td>
+				<td>{{ app.user.firstname}}</td>
+				<td>{{ app.user.email}}</td>
+			</tr>
+		</tbody>
+	</table>
+
+    <h2>
+		Vos annonces en ligne
+	</h2>
+	<table border="1">
+		<thead>
+			<tr>
+				<th scope="col">Titre :</th>
+				<th scope="col">Contenu :</th>
+            </tr>
+		</thead>
+		<tbody>
+            {% for annonce in app.user.annonces %}
+                
+            
+			<tr>
+				<td>{{ annonce.title}}</td>
+				<td>{{ annonce.content | raw}}</td>
+			</tr>
+            {% endfor %}
+		</tbody>
+	</table>
+
+    <h2>
+		Vos images en ligne
+	</h2>
+	    {% for annonce in app.user.annonces %}
+            <h3>{{ annonce.title }}</h3>
+           {% for image in annonce.images %}
+               {{ absolute_url( asset('uploads/images/' ~ image.name )) }}
+           {% endfor %}     
+            			
+        {% endfor %}
+
+{% endblock %}

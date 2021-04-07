@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des annonces{% endblock %}
+
+{% block body %}
+    <h1>Liste des annonces</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Titre</th>
+                <th>Slug</th>
+                <th>Contenu</th>
+                <th>Publié le:</th>
+                
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for annonce in annonces %}
+            <tr>
+                <td>{{ annonce.id }}</td>
+                <td>{{ annonce.title }}</td>
+                <td>{{ annonce.slug }}</td>
+                <td>{{ annonce.content | raw}}</td>
+                <td>{{ annonce.createdAt ? annonce.createdAt|date('d/m/Y H:i:s') : '' }}</td>
+                
+                <td>
+                    <a href="{{ path('annonces_details', {'slug': annonce.slug}) }}">Voir</a>
+                    <a href="{{ path('users_annonces_edit', {'id': annonce.id}) }}">Modifier</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">Pas d'annonce en ligne</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <ul class="pagination">
+    {% set maxPages = (total / limit) | round(0, 'ceil') %}
+     <li class="{{ page == 1 ? 'disabled' : '' }}">
+        <a href="?page=1">
+            <i class="fas fa-step-backward"></i>
+        </a>
+    </li>
+    <li class="{{ page == 1 ? 'disabled' : '' }}">
+        <a href="{{ (page > 1) ? '?page=' ~ (page - 1) : ''}}">
+            <i class="fas fa-angle-left"></i>
+        </a>
+    </li>
+    {% for item in 1..(maxPages)  %}
+       <li class="{{ page == item ? 'active' : '' }}">
+        <a href="?page={{ item }}">{{ item }}</a>
+       </li>
+    {% endfor %}
+    <li class="{{ page == maxPages ? 'disabled' : '' }}">
+        <a href="{{ (page < maxPages) ? '?page=' ~ (page + 1) : ''}}">
+            <i class="fas fa-angle-right"></i>
+        </a>
+    </li>
+     <li class="{{ page == maxPages ? 'disabled' : '' }}">
+        <a href="?page={{ maxPages }}">
+            <i class="fas fa-step-forward"></i>
+        </a>
+    </li>
+    </ul>
+
+
+    <a href="{{ path('users_annonces_ajout') }}">Ajouter une annonce</a>
+{% endblock %}

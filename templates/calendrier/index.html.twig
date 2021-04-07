@@ -1,0 +1,102 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Calendrier{% endblock %}
+
+{% block stylesheets %}
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.6.0/main.min.css" integrity="sha256-uq9PNlMzB+1h01Ij9cx7zeE2OR2pLAfRw3uUUOOPKdA=" crossorigin="anonymous">
+{% endblock %}
+{% block body %}
+
+<div class="container">
+    <div id="calendrier">
+        <!-- Emplacement du calendrier -->
+    </div>
+    <a href="{{ path('calendrier_new') }}"> Ajouter un rdv</a>
+    
+</div>
+{% endblock %}
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.6.0/main.min.js" integrity="sha256-ekrJn2FeZaiUFq99QswpQCUTME/HxaDfX7R8INzKJGE=" crossorigin="anonymous"></script>
+
+    <script>
+       //Paramètres pour le calendrier
+        window.onload = () => {
+            let calendarElt = document.querySelector("#calendrier");
+            let calendar = new FullCalendar.Calendar(calendarElt, {
+                customButtons: {
+                    ajoutEvent: {
+                        text: 'Nouveau RDV',
+                        click: function(e) {
+                            alert('Vous allez ajouter un autre évènement');
+                        }
+                    }
+                },
+                initialView: 'dayGridMonth',
+               
+                locale: 'fr',
+                timeZone: 'Europe/Paris',
+                headerToolbar: {
+                    start: 'prev,next today ajoutEvent',
+                    center: 'title',
+                    end: 'dayGridMonth, timeGridWeek, list'
+                },
+                buttonText: {
+                    today:    'Aujourd\'hui',
+                    month:    'Mois',
+                    week:     'Semaine',
+                    day:      'Jour',
+                    list:     'liste'
+                },
+                height: 450,
+                businessHours: [ // specify an array instead
+                    {
+                        daysOfWeek: [ 1, 2, 3, 4, 5 ], // Monday, Tuesday, Wednesday
+                        startTime: '08:00', // 8am
+                        endTime: '18:00' // 6pm
+                    },
+                    {
+                        daysOfWeek: [ 5 ], // Thursday, Friday
+                        startTime: '10:00', // 10am
+                        endTime: '16:00' // 4pm
+                    }
+                ],
+                nowIndicator: true,
+                // permet de modifier les events
+                editable: true,
+                eventRezisableFromStart: true,
+                selectable: true,
+
+
+                eventClick: function(info) {
+                    alert('Event: ' + info.event.description); },
+
+                // je passe les données traitées dans le controleur
+                events: {{ data|raw }}
+                });
+
+                // ecouteur d'évènements sur le calendrier
+                calendar.on('eventChange', (e) => {
+
+                    let url = `/calendrier/api/${e.event.id}/edit`
+                    
+                    let donnees = {
+                        "title": e.event.title,
+                        "description": e.event.extendedProps.description,
+                        "start": e.event.start,
+                        "end": e.event.end,
+                        "backgroundColor": e.event.backgroundColor,
+                        "borderColor": e.event.borderColor,
+                        "textColor": e.event.textColor,
+                        "allDay": e.event.allDay
+                    }
+                   
+                    let xhr = new XMLHttpRequest()
+
+                    xhr.open("PUT", url)
+                    xhr.send(JSON.stringify(donnees))
+                })
+
+            calendar.render();
+        }
+    </script>
+{% endblock %}
