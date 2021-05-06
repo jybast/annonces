@@ -37,7 +37,7 @@
 						</td>
 						<td class="text-center">
 							<a href="#" class="btn rounded-1 primary press modal-trigger" data-target="modal-delete" data-id={{annonce.id}} data-titre={{annonce.title}}>Supprimer</a>
-							<a href="" class="class="btn rounded-1 primary press modal-trigger" data-target="modal-delete" data-id={{annonce.id}} data-titre={{annonce.title}}">Effacer</a>
+							<a href="" class="btn rounded-1 primary press modal-trigger" data-target="modal-delete" data-id={{annonce.id}} data-titre={{annonce.title}}">Effacer</a>
 						</td>
 
 					</tr>
@@ -77,7 +77,7 @@
 			let activer = document.querySelectorAll("[type=checkbox]")
 			for (let bouton of activer) {
 				bouton.addEventListener("click", function () {
-					let xmlhttp = new XMLHttpRequest;
+					let xmlhttp = new XMLHttpRequest
 					xmlhttp.open("get", `/admin/annonces/activer/${this.dataset.id}`)
 					xmlhttp.send()
 				})

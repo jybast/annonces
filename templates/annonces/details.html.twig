@@ -47,6 +47,35 @@
 				</div>
 			</div>
 		</div>
+		<!-- Formulaire pour les commentaires -->
+		<div class="grix xs2 sm3 gutter-0 card">
+			<div class="col-xs2 col-sm3">
+				<h2>Liste des commentaires</h2>
+				
+					{% for comment in annonce.comments %}
+					<hr>
+						{# on affiche seulement les commentaires qui n'ont pas de parents #}
+						{% if comment.parent == null %}
+							<p>Publié par {{comment.nickname}} le {{ comment.createdAt | date('d/m/Y à H:i') }}</p>
+							<p>{{ comment.content | raw}}</p>
+							<p><a href="#ajout-commentaire" data-reply data-id="{{ comment.id }}" class="btn small rounded-2 secondary ">Répondre</a></p>
+							{# On affiche les réponses #}
+							{% for reply in comment.replies %}
+							<hr>
+								<p><i>Réponse publiée par {{reply.nickname}} le {{ reply.createdAt | date('d/m/Y à H:i') }}</i></p>
+								<p><i>{{ reply.content | raw}}</i></p>
+							{% endfor %}
+						{% endif %}
+					{% else %}
+						<p>Soyez le premier a poster un commentaire</p>
+					{% endfor %}
+			</div>
+			<hr>
+			<div class="col-xs2 col-sm3" id="ajout-commentaire">
+				<h2>Ajouter un commentaire</h2>
+					{{ form(commentForm)}}
+			</div>
+		</div>
 	</div>
 
 	<div class="modal shadow-1 white falling" id="modal-contact" data-ax="modal">
@@ -76,6 +105,15 @@
 	{# Au chargement de la page on affiche le titre de l'annonce #}
 	window.onload = () => {
 		document.querySelector("#annonce_contact_title").value = "{{ annonce.title | raw}}"
+
+		// On met un écouteur d'évènement sur tous les boutons avec [data-reply] des commentaires
+		document.querySelectorAll("[data-reply]").forEach(element => {
+			// sur tous les éléments j'ajoute un listener sur le click
+			element.addEventListener("click", function(){
+				// je récupère l'id de la balise input hidden et je lui donne la valeur du data-id de la balise sur laquelle on clique
+				document.querySelector("#comments_parentid").value = this.dataset.id
+			})
+		})
 	}
 	</script>
 {% endblock %}

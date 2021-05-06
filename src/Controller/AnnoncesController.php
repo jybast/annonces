@@ -4,9 +4,12 @@ namespace App\Controller;
 
 use App\Entity\Images;
 use App\Entity\Annonces;
+use App\Entity\Comments;
 use App\Form\AnnonceContactType;
 use App\Form\AnnoncesType;
+use App\Form\CommentsType;
 use App\Repository\AnnoncesRepository;
+use DateTime;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -106,9 +109,47 @@ class AnnoncesController extends AbstractController
 
           }
 
+          // ------------ Partie de traitement des commentaires
+           // on génère l'instance de commentaire
+           $comment = new Comments();
+           // on génère le formulaire
+           $commentForm = $this->createForm(CommentsType::class, $comment);
+          // traitement de la requête
+           $commentForm->handleRequest($request);
+
+          // Traitement du formulaire
+          if($commentForm->isSubmitted() && $commentForm->isValid()){
+            // faire dd($comment) permet de voir ce qui renvoyé et ce qui manque  
+            // récupère la date
+              $comment->setCreatedAt(new DateTime());
+              // récupère l'annonce
+              $comment->setAnnonces($annonce);
+
+              // il faut récupérer la valeur du parent puisque Parentid n'est pas mappé en base
+              $parentid = $commentForm->get('parentid')->getData();
+              // il récupérer le commentaire "parent" correspondant
+              $em = $this->getDoctrine()->getManager();
+              //   méthode find() pour rechercher par Id (parent est trouvé ou null)
+              if($parentid != null){
+                  $parent = $em->getRepository(Comments::class)->find($parentid);
+              }
+              
+              // on définit la valeur de l'ID du parent, si n'existe pas est mis à null
+              $comment->setParent($parent ?? null);
+
+              $em->persist($comment);
+              $em->flush();
+
+              $this->addFlash('message', 'votre commentaire est en attente de modération');
+            return $this->redirectToRoute('annonces_details', ['slug' => $annonce->getSlug()]);
+
+          }
+
         return $this->render('annonces/details.html.twig', [
             'annonce' => $annonce,
-            'form' => $form->createView()   // envoi du formulaire à la vue
+            'form' => $form->createView(),   // génère le html du formulaire à la vue
+            'commentForm' => $commentForm->createView()
+
         ]);
     }
 
